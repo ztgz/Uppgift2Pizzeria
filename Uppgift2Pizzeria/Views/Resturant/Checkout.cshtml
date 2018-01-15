@@ -1,0 +1,38 @@
+﻿@using Uppgift2Pizzeria.Models
+@model List<Matratt>
+    
+<div class="row">
+    <div class="col-12 col-md-8 col-lg-6 offset-md-2 offset-lg-3">
+        <h1 class="text-outline">Orders</h1>
+        <table class="text-outline">
+            <tr class="text-gray">
+                <th>Maträtt</th>
+                <th> Pris</th>
+            </tr>
+            @foreach (Matratt meal in Model)
+            {
+                <tr>
+                    <td class="pr-2">@meal.MatrattNamn</td>
+                    <td class="pr-3">@meal.Pris kr</td>
+                    <td><a asp-controller="Resturant" asp-action="RemoveItemFromBasket" asp-route-id="@meal.MatrattId"
+                           class="btn btn-danger">Ta bort</a></td>
+                </tr>
+            }
+        </table>
+
+        <br/>
+
+        <h3 class="text-gray text-outline">Totalt pris = @Model.Sum(m => m.Pris) kr</h3>
+        
+        <br/>
+
+        <a asp-controller="Resturant" asp-action="Menu" class="btn btn-dark mr-1 my-1">Tillbaka</a>
+        @if (Model.Count > 0)
+        {
+            <a asp-controller="" asp-action ="EmptyBasket" class="btn btn-secondary mr-1 my-1">Ta bort order</a>
+            <a asp-controller="Resturant" asp-action="SendOrder" class="btn btn-warning my-1">Bekräfta</a>
+        }
+    </div>
+</div>
+
+

@@ -1,0 +1,55 @@
+﻿@model Uppgift2Pizzeria.Models.Kund
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <form method="post" asp-controller="Resturant" asp-action="MyAccount">
+            <div asp-validation-summary="All" class="alert-dark"></div>
+            <div class="form-group">
+                <label asp-for="AnvandarNamn"></label>
+                <input asp-for="AnvandarNamn" class="form-control" readonly />
+                <span asp-validation-for="AnvandarNamn" class="alert-dark"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Losenord"></label>
+                <input asp-for="Losenord" class="form-control" value=@Model.Losenord />
+                <span asp-validation-for="Losenord"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Namn"></label>
+                <input asp-for="Namn" class="form-control" />
+                <span asp-validation-for="Namn" class="alert-dark"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gatuadress"></label>
+                <input asp-for="Gatuadress" class="form-control" />
+                <span asp-validation-for="Gatuadress" class="alert-dark"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Postnr"></label>
+                <input asp-for="Postnr" class="form-control" />
+                <span asp-validation-for="Postnr" class="alert-dark"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Postort"></label>
+                <input asp-for="Postort" class="form-control" />
+                <span asp-validation-for="Postort" class="alert-dark"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="alert-dark"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Telefon"></label>
+                <input asp-for="Telefon" class="form-control" />
+                <span asp-validation-for="Telefon" class="alert-dark"></span>
+            </div>
+            
+            <div class="text-right">
+                <a class="btn btn-dark mr-1" asp-controller="Resturant" asp-action="Index">Tillbaka</a>
+                <button type="submit" class="btn btn-light">Spara användare</button>
+            </div>
+
+        </form>
+    </div>
+</div>

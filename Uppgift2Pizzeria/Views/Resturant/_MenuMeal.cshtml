@@ -1,0 +1,22 @@
+﻿@model Uppgift2Pizzeria.ViewModels.MenuModel
+    
+<div>
+    <li><h4 class="text-outline">@Model.Meal.MatrattNamn: @Model.Meal.Pris kr</h4></li>
+
+    <div class="row">
+        <div class="col-12 col-md-9">
+            <ul class="ingirident-list">
+                @foreach (var ingridient in Model.Ingridients)
+                {
+                    <li class="text-outline">@ingridient.ProduktNamn</li>
+                }
+            </ul>
+        </div>
+        <div class="col-12 col-md-3 offset-4 offset-md-0">
+            <h5 class="text-outline">Pris: @Model.Meal.Pris kr </h5>
+            <a class="btn btn-warning" asp-controller="Resturant" asp-action="OrderMeal" asp-route-Id="@Model.Meal.MatrattId">Lägg till</a>
+        </div>
+    </div>
+</div>
+
+<hr/>

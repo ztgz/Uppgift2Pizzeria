@@ -1,0 +1,101 @@
+﻿body {
+    font-family: 'Raleway', sans-serif;
+    background-color: #900a0a;
+    color: white;
+}
+
+.text-outline, label, h2 {
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+#title {
+    background-color: #b11010;
+    color: white;
+}
+
+#title a {
+    color: white;
+}
+
+#title a:hover {
+    text-decoration: none;
+}
+
+#title h1 {
+    font-size: 4rem;
+}
+
+.sidebar {
+    background-color: black;
+}
+
+.nav > li > a {
+    color: white;
+}
+
+    .nav > li > a:hover, .nav > li > a:focus {
+        background-color: #ef97a9;
+    }
+
+.box {
+    width: 100%;
+    height: 30vw;
+
+    min-height: 180px;
+
+    -webkit-filter: grayscale(15%);
+    filter: grayscale(15%);
+}
+
+    .box:hover {
+        -webkit-filter: grayscale(0%);
+        filter: grayscale(0%);
+    }
+
+.pizza-oven-background {
+    background-image: url('../images/pizza-oven.jpg');
+    background-size: cover;
+}
+
+.pizza-background {
+    background-image: url('../images/pizza.jpg');
+    background-size: cover;
+}
+
+.book-backgrund {
+    background-image: url('../images/book.jpg');
+    background-size: cover;
+}
+
+a.fill-div {
+    display: block;
+    height: 100%;
+    width: 100%;
+    text-decoration: none;
+    color: white;
+}
+
+    a.fill-div:hover {
+        color: #ef97a9;
+    }
+
+.non-decorated {
+    list-style-type: none;
+}
+
+    .non-decorated > div {
+        background-color: #ea1c1c;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px 0 10px 10px;
+
+    }
+
+.ingirident-list {
+    list-style-type: square;
+    color: lightgray;
+}
+
+.text-gray {
+    color: gray;
+}

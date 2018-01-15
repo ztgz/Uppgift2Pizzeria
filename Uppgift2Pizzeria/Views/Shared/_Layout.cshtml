@@ -1,0 +1,72 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:900" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <link href="~/css/styles.css" rel="stylesheet" />
+    <title>Tomasos Pizzeria</title>
+
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Head title -->
+        <div class="row py-4 text-center text-outline" id="title">
+            <div class="col-12">
+                <h1><a asp-controller="Resturant" asp-action="Index">Tomasos Pizzeria</a></h1>
+            </div>
+        </div>
+        <!-- //end head title -->
+
+        <div class="row">
+            <!-- sidebar-->
+            <div class="col-4 col-md-3 col-lg-2 sidebar">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Resturant" asp-action="Index">Start</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Resturant" asp-action="LoggIn">Logga in</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Resturant" asp-action="MyAccount">Mina sidor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Resturant" asp-action="CreateUser">Skapa konto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Resturant" asp-action="Menu">Meny</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Resturant" asp-action="Checkout">Bekräfta order</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Resturant" asp-action="LoggOut">Logga ut</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- //sidebar-->
+            <div class="col-8 col-md-9 col-lg-10">
+                @RenderBody()
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+
+    @*<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>*@
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
