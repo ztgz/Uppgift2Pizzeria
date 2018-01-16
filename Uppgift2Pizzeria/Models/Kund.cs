@@ -32,6 +32,7 @@ namespace Uppgift2Pizzeria.Models
         public string Postort { get; set; }
 
         [StringLength(50, ErrorMessage = "Email kan max vara 50 tecken.")]
+        [EmailAddress(ErrorMessage = "En riktig epost måste anges")]
         public string Email { get; set; }
 
         [StringLength(50, ErrorMessage = "Telefon kan max vara 50 tecken.")]
