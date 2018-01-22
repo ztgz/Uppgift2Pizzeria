@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Uppgift2Pizzeria.Data;
 using Uppgift2Pizzeria.Models;
 using Uppgift2Pizzeria.ViewModels;
 
@@ -18,7 +19,7 @@ namespace Uppgift2Pizzeria.Controllers
 
         private TomasosContext _context;
 
-        public ResturantController(TomasosContext context)
+        public ResturantController(TomasosContext context, ApplicationDbContext context2)
         {
             _context = context;
         }
