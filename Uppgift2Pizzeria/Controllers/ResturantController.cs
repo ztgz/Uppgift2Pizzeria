@@ -14,7 +14,6 @@ namespace Uppgift2Pizzeria.Controllers
 {
     public class ResturantController : Controller
     {
-        private const string SessionUsername = "_Name";
         private const string SessionBasket = "_Basket";
 
         private TomasosContext _context;

@@ -39,6 +39,9 @@ namespace Uppgift2Pizzeria.Controllers
         {
             if (ModelState.IsValid)
             {
+                //Try to log off
+                await _signInManager.SignOutAsync();
+
                 ApplicationUser newUser = new ApplicationUser
                 {
                     UserName = user.AnvandarNamn
@@ -56,7 +59,7 @@ namespace Uppgift2Pizzeria.Controllers
                     _context.Kund.Add(user);
                     _context.SaveChanges();
 
-                    return RedirectToAction("LoggIn", "Resturant");
+                    return RedirectToAction("Login");
                 }
             }
 
@@ -95,8 +98,8 @@ namespace Uppgift2Pizzeria.Controllers
             var currentUser = await _userManager.GetUserAsync(HttpContext.User);
 
             var model = _context.Kund.FirstOrDefault(k => k.AnvandarNamn == currentUser.UserName);
-            
-            if(model != null)
+
+            if (model != null)
                 return View(model);
 
             return RedirectToAction("Login");
@@ -121,12 +124,13 @@ namespace Uppgift2Pizzeria.Controllers
 
                     _context.SaveChanges();
                 }
-                
+
                 return View("Updated");
 
             }
 
             return View();
         }
+
     }
 }

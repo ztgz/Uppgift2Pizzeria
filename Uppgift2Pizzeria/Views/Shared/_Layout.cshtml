@@ -30,7 +30,7 @@
                         <a class="nav-link" asp-controller="Resturant" asp-action="Index">Start</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Account" asp-action="Login" asp-route-returnUrl="Create">Logga in</a>
+                        <a class="nav-link" asp-controller="Account" asp-action="Login" asp-route-returnUrl="MyAccount">Logga in</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Account" asp-action="MyAccount">Mina sidor</a>
@@ -44,9 +44,9 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Resturant" asp-action="Checkout">Bekräfta order</a>
                     </li>
-                    <li class="nav-item">
+                    @*<li class="nav-item">
                         <a class="nav-link" asp-controller="Resturant" asp-action="LoggOut">Logga ut</a>
-                    </li>
+                    </li>*@
                 </ul>
             </div>
             <!-- //sidebar-->
