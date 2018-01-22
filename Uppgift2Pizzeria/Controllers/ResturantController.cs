@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Uppgift2Pizzeria.Data;
@@ -15,11 +16,10 @@ namespace Uppgift2Pizzeria.Controllers
     {
         private const string SessionUsername = "_Name";
         private const string SessionBasket = "_Basket";
-        private const string SessionRedirectTo = "_Redirect";
 
         private TomasosContext _context;
 
-        public ResturantController(TomasosContext context, ApplicationDbContext context2)
+        public ResturantController(TomasosContext context)
         {
             _context = context;
         }
@@ -29,157 +29,7 @@ namespace Uppgift2Pizzeria.Controllers
             return View();
         }
 
-        public IActionResult LoggIn()
-        {
-            if (IsLoggedIn())
-                return RedirectToAction("MyAccount");
-
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult LoggIn(UserModel userModel)
-        {
-            if (ModelState.IsValid)
-            {
-                var kund = _context.Kund.SingleOrDefault(k => k.AnvandarNamn == userModel.AnvandarNamn);
-
-                //If there is a kund with username and password...
-                if (kund != null && kund.Losenord == userModel.Losenord)
-                {
-                    //..store username in session
-                    HttpContext.Session.SetString(SessionUsername, kund.AnvandarNamn);
-
-                    //Get view to redirect to...
-                    string toView = HttpContext.Session.GetString(SessionRedirectTo);
-                                        
-                    //... if it is empty set standard
-                    if (String.IsNullOrEmpty(toView))
-                        toView = "MyAccount";
-
-                    //...and redirect to view
-                    return RedirectToAction(toView);
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Användarnamn eller lösenord stämmer inte");
-                }
-            }
-
-            return View("LoggIn");
-        }
-
-        public IActionResult LoggOut()
-        {
-            LoggOutAccount();
-
-            return View();
-        }
-
-        public IActionResult CreateUser()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult CreateUser(Kund formKund)
-        {
-            //If logged in: logg out account
-            if (IsLoggedIn())
-            {
-                LoggOutAccount();
-            }
-
-            //It the model is not vaild
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
-            //If there a user with the username already exsist
-            if (_context.Kund.SingleOrDefault(k => k.AnvandarNamn == formKund.AnvandarNamn) != null)
-            {
-                ModelState.AddModelError("", "Användarnamn är upptaget");
-                return View();
-            }
-
-            //Create user
-            var kund = new Kund()
-            {
-                AnvandarNamn = formKund.AnvandarNamn,
-                Losenord = formKund.Losenord,
-                Namn = formKund.Namn,
-                Email = formKund.Email,
-                Gatuadress = formKund.Gatuadress,
-                Postnr = formKund.Gatuadress,
-                Postort = formKund.Postort,
-                Telefon = formKund.Gatuadress
-            };
-
-            _context.Kund.Add(kund);
-
-            _context.SaveChanges();
-
-            return RedirectToAction("LoggIn");
-        }
-
-        public IActionResult MyAccount()
-        {
-            //If logged in...
-            if (IsLoggedIn())
-            {
-                //...try to get Kund from database
-                var model = _context.Kund.FirstOrDefault(k => k.AnvandarNamn == GetUsernname());
-
-                //Open my pages if a valid account is found
-                if (model != null)
-                    return View(model);
-            }
-
-            return View("LoggIn");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult MyAccount(Kund formKund)
-        {
-            if (ModelState.IsValid)
-            {
-                var kund = _context.Kund.SingleOrDefault(k => k.AnvandarNamn == formKund.AnvandarNamn);
-
-                if (kund != null)
-                {
-                    kund.Losenord = formKund.Losenord;
-                    kund.Namn = formKund.Namn;
-                    kund.Gatuadress = formKund.Gatuadress;
-                    kund.Postnr = formKund.Postnr;
-                    kund.Postort = formKund.Postort;
-                    kund.Email = formKund.Email;
-                    kund.Telefon = formKund.Telefon;
-
-                    _context.SaveChanges();
-                }
-
-                return RedirectToAction("UserUpdated");
-
-            }
-
-            //Reload MyAccount with new settings
-            return RedirectToAction("MyAccount");
-        }
-
-        public IActionResult UserUpdated()
-        {
-            if (!IsLoggedIn())
-            {
-                return RedirectToLoggin("MyAccount");
-            }
-
-            return View();
-        }
-
-        public IActionResult Menu()
+         public IActionResult Menu()
         {
             //Create a model for the view
             var model = new List<MenuModel>();
@@ -235,21 +85,15 @@ namespace Uppgift2Pizzeria.Controllers
             return RedirectToAction("Menu");
         }
 
+        [Authorize]
         public IActionResult Checkout()
         {
-            if (!IsLoggedIn())
-            {
-                return RedirectToLoggin("Checkout");
-            }
-            
             return View(GetBasket());
         }
 
+        [Authorize]
         public IActionResult SendOrder()
         {
-            if (!IsLoggedIn())
-                return RedirectToLoggin("Checkout");
-
             var basket = GetBasket();
 
             if (basket.Count > 0)
@@ -306,11 +150,13 @@ namespace Uppgift2Pizzeria.Controllers
             return RedirectToAction("Confirmed");
         }
 
+        [Authorize]
         public IActionResult Confirmed()
         {
             return View();
         }
 
+        [Authorize]
         public IActionResult EmptyBasket()
         {
             SaveBasket(new List<Matratt>());
@@ -318,6 +164,7 @@ namespace Uppgift2Pizzeria.Controllers
             return RedirectToAction("Checkout");
         }
 
+        [Authorize]
         public IActionResult RemoveItemFromBasket(int id)
         {
             List<Matratt> meals = GetBasket();
@@ -335,33 +182,9 @@ namespace Uppgift2Pizzeria.Controllers
             return RedirectToAction("Checkout");
         }
 
-        private IActionResult RedirectToLoggin(string toView)
-        {
-            if (toView is null)
-                toView = "MyAccount";
-
-            HttpContext.Session.SetString(SessionRedirectTo, toView);
-
-            return RedirectToAction("LoggIn");
-        }
-
-        private bool IsLoggedIn()
-        {
-            //Try to recive username
-            string username = GetUsernname();
-
-            //User is logged in if it has a username
-            return !String.IsNullOrWhiteSpace(username);
-        }
-
-        private void LoggOutAccount()
-        {
-            HttpContext.Session.SetString(SessionUsername, "");
-        }
-
         private string GetUsernname()
         {
-            return HttpContext.Session.GetString(SessionUsername);
+            return HttpContext.User.Identity.Name;
         }
 
         private List<Matratt> GetBasket()

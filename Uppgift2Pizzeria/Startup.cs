@@ -31,8 +31,15 @@ namespace Uppgift2Pizzeria
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
+                {
+                    opts.User.RequireUniqueEmail = false;
+                    opts.Password.RequiredLength = 1;
+                    opts.Password.RequireNonAlphanumeric = false;
+                    opts.Password.RequireLowercase = false;
+                    opts.Password.RequireUppercase = false;
+                    opts.Password.RequireDigit = false;
+                }).AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddSession();

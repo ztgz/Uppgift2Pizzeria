@@ -1,7 +1,9 @@
 ﻿@model Uppgift2Pizzeria.ViewModels.UserModel
+
 <div class="row justify-content-center">
     <div class="col-12 col-md-10 col-lg-8">
-        <form method="post" asp-controller="Resturant" asp-action="LoggIn">
+        <form method="post" asp-action="Login">
+            <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl"/>
             <div asp-validation-summary="All" class="mt-1 alert-dark"></div>
             <div class="form-group">
                 <label asp-for="AnvandarNamn"></label>
@@ -17,11 +19,11 @@
                 <button type="submit" class="btn btn-light">Logga in</button>
             </div>
         </form>
-        
-        <br/> <br/> <hr/>
+
+        <br /> <br /> <hr />
 
         <div class="text-center">
-            <a class="btn btn-warning" asp-controller="Resturant" asp-action="CreateUser">Skapa ny användare</a>
+            <a class="btn btn-warning" asp-action="Create">Skapa ny användare</a>
         </div>
     </div>
 </div>
