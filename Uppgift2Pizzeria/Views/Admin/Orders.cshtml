@@ -1,0 +1,31 @@
+﻿@using Uppgift2Pizzeria.Models
+@model List<Uppgift2Pizzeria.Models.Bestallning>
+
+<div class="row">
+    <div class="col-6">
+        <a class="btn btn-secondary"
+           asp-controller="Admin"
+           asp-action="ListOfOrders"
+           asp-route-delivered="@false"
+           data-ajax="true"
+           data-ajax-method="get"
+           data-ajax-mode="append"
+           data-ajax-update="#listOfOrders">Ej levereade ordrar</a>
+        <a class="btn btn-secondary"
+           asp-controller="Admin"
+           asp-action="ListOfOrders"
+           asp-route-delivered="@true"
+           data-ajax="true"
+           data-ajax-method="get"
+           data-ajax-mode="append"
+           data-ajax-update="#listOfOrders">Levererade ordrar</a>
+        <hr/>
+    </div>
+    <div class="col-5"></div>
+</div>
+
+<div class="row">
+    <div class="col-6" id="listOfOrders">
+    </div>
+    <div class="col-6" id="infoBox"></div>
+</div>

@@ -1,0 +1,18 @@
+﻿@using Uppgift2Pizzeria.Models
+@model List<Uppgift2Pizzeria.Models.Bestallning>
+
+
+
+@foreach (Bestallning order in Model)
+{
+    <p>@order.BestallningId - @order.BestallningDatum</p>
+    <a class="btn btn-warning"
+       asp-controller="Admin"
+       asp-action="OrderDetails"
+       asp-route-orderId="@order.BestallningId"
+       data-ajax="true"
+       data-ajax-method="get"
+       data-ajax-mode="append"
+       data-ajax-update="#infoBox">Info</a>
+       <hr/>
+}

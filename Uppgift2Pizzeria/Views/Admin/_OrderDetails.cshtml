@@ -1,0 +1,26 @@
+﻿@model Uppgift2Pizzeria.ViewModels.OrderDetailsViewModel
+
+<h2>(@Model.Bestallning.BestallningId) @Model.Bestallning.BestallningDatum</h2>
+@foreach (var bm in Model.BestallningMatratt)
+{
+    <p>@bm.Matratt.MatrattNamn x @bm.Antal</p>
+}
+
+@if (Model.Bestallning.Levererad)
+{
+    <p>Leveransstatus: Levererad</p>
+}
+else
+{
+    <p>Leveransstatus: Ej levererad</p>
+    <a class="btn btn-success"
+       asp-controller="Admin"
+       asp-action="OrderDelivered"
+       asp-route-orderId="@Model.Bestallning.BestallningId">
+        Levererad
+    </a>
+}
+
+<a class="btn btn-danger ml-2" asp-controller="Admin"
+   asp-action="RemoveOrder"
+   asp-route-orderId="@Model.Bestallning.BestallningId">Ta bort order</a>

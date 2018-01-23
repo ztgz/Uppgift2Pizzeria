@@ -225,5 +225,58 @@ namespace Uppgift2Pizzeria.Controllers
 
             return View(model);
         }
+
+        public IActionResult Orders()
+        {
+            var model = _context.Bestallning.ToList();
+
+            return View(model);
+        }
+
+        public IActionResult OrderDetails(int orderId)
+        {
+            OrderDetailsViewModel model = new OrderDetailsViewModel();
+            model.Bestallning = _context.Bestallning.FirstOrDefault(b => b.BestallningId == orderId);
+            model.BestallningMatratt = _context.BestallningMatratt
+                .Include(bm => bm.Matratt)
+                .Where(bm =>  bm.BestallningId == orderId)
+                .ToList();
+
+            return PartialView("_OrderDetails", model);
+        }
+
+        public IActionResult RemoveOrder(int orderId)
+        {
+            //remove the orderdetails
+            foreach (BestallningMatratt bm in _context.BestallningMatratt.Where(b => b.BestallningId == orderId))
+            {
+                _context.Remove(bm);
+            }
+            _context.SaveChanges();
+
+            //remove the order
+            Bestallning order = _context.Bestallning.FirstOrDefault(b => b.BestallningId == orderId);
+            _context.Remove(order);
+            _context.SaveChanges();
+
+
+            return RedirectToAction("Orders");
+        }
+
+        public IActionResult OrderDelivered(int orderId)
+        {
+            Bestallning order = _context.Bestallning.FirstOrDefault(b => b.BestallningId == orderId);
+            order.Levererad = true;
+            _context.SaveChanges();
+
+            return RedirectToAction("Orders");
+        }
+
+        public IActionResult ListOfOrders(bool delivered)
+        {
+            var model = _context.Bestallning.Where(b => b.Levererad == delivered).OrderByDescending(b => b.BestallningDatum).ToList();
+
+            return PartialView("_ListOfOrders", model);
+        }
     }
 }
