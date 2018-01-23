@@ -1,0 +1,25 @@
+﻿@model Uppgift2Pizzeria.ViewModels.UserRoleViewModel
+
+<table>
+    <tr>
+        <th>Namn</th>
+        <th>Roll</th>
+    </tr>
+    <tr>
+        <td>@Model.User.AnvandarNamn</td>
+        <td>@Model.Role</td>
+    </tr>
+    
+    @if (Model.Role == "RegularUser")
+    {
+        <tr>
+            <td colspan="2">
+                <a class="btn btn-success" asp-controller="Account" asp-action="UpgradeUser" 
+                   asp-route-userName="@Model.User.AnvandarNamn">
+                    Uppgradera
+                </a>
+            </td>
+        </tr>
+    }
+</table>
+

@@ -218,5 +218,12 @@ namespace Uppgift2Pizzeria.Controllers
 
             return RedirectToAction("Menu", "Resturant");
         }
+
+        public IActionResult Users()
+        {
+            List<Kund> model = _context.Kund.Where(k => k.AnvandarNamn != HttpContext.User.Identity.Name).ToList();
+
+            return View(model);
+        }
     }
 }

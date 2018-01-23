@@ -1,0 +1,30 @@
+﻿@model List<Uppgift2Pizzeria.Models.Kund>
+
+
+
+<div class="row">
+    <div class="col-8">
+        <table>
+            <tr><th>Användare</th></tr>
+            @foreach (var customer in Model)
+            {
+                <tr>
+                    <td>@customer.AnvandarNamn</td>
+                    <td>
+                        <a class="btn btn-warning"
+                           asp-controller="Account"
+                           asp-action="GetUserInfo"
+                           asp-route-username="@customer.AnvandarNamn"
+                           data-ajax="true"
+                           data-ajax-method="get"
+                           data-ajax-mode="append"
+                           data-ajax-update="#infoBox">Ändra</a>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="col-4" id="infoBox">
+    </div>
+</div>
+

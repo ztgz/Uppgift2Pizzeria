@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite.Internal.ApacheModRewrite;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Uppgift2Pizzeria.Data;
 using Uppgift2Pizzeria.Models;
@@ -138,5 +139,51 @@ namespace Uppgift2Pizzeria.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUserInfo(string username)
+        {
+            UserRoleViewModel vm = new UserRoleViewModel();
+            vm.User = _context.Kund.FirstOrDefault(k => k.AnvandarNamn == username);
+
+            vm.Role = await GetRoleOfUser(username);
+
+            return PartialView("_UserInfo" ,vm);
+        }
+       
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpgradeUser(string userName)
+        {
+            string role = await GetRoleOfUser(userName);
+
+            //If user is a regular user...
+            if (role == "RegularUser")
+            {
+                //...get the user
+                ApplicationUser user = await GetApplicationUser(userName);
+
+                //...remove regular user role
+                await _userManager.RemoveFromRoleAsync(user, "RegularUser");
+
+                //...and add premium user role
+                await _userManager.AddToRoleAsync(user, "PremiumUser");
+            }
+
+            return RedirectToAction("Users", "Admin");
+        }
+
+        private async Task<string> GetRoleOfUser(string userName)
+        {
+            ApplicationUser user = await GetApplicationUser(userName);
+
+            var roles = _userManager.GetRolesAsync(user);
+
+            //A user only have one role in this application
+            return roles.Result[0];
+        }
+
+        private async Task<ApplicationUser> GetApplicationUser(string userName)
+        {
+            return await _userManager.FindByNameAsync(userName);
+        }
     }
 }
