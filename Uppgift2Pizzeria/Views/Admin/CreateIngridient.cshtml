@@ -1,0 +1,21 @@
+﻿@model Uppgift2Pizzeria.ViewModels.IngridentViewModel
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+
+        <form method="post" asp-action="CreateIngridient">
+            <div asp-validation-summary="All" class="alert-dark"></div>
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="alert-dark"></span>
+            </div>
+
+
+            <div class="text-right">
+                <a class="btn btn-dark mr-1" asp-controller="Resturant" asp-action="Menu">Avbryt</a>
+                <button type="submit" class="btn btn-light">Skapa ingrediens</button>
+            </div>
+        </form>
+    </div>
+</div>

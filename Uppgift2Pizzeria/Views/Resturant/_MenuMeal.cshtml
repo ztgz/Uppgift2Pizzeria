@@ -1,5 +1,7 @@
-﻿@model Uppgift2Pizzeria.ViewModels.MenuModel
-    
+﻿@using Microsoft.AspNetCore.Identity
+@using Uppgift2Pizzeria.Data
+@model Uppgift2Pizzeria.ViewModels.MenuModel
+@inject SignInManager<ApplicationUser> signInManager
 <div>
     <li><h4 class="text-outline">@Model.Meal.MatrattNamn: @Model.Meal.Pris kr</h4></li>
 
@@ -15,8 +17,15 @@
         <div class="col-12 col-md-3 offset-4 offset-md-0">
             <h5 class="text-outline">Pris: @Model.Meal.Pris kr </h5>
             <a class="btn btn-warning" asp-controller="Resturant" asp-action="OrderMeal" asp-route-Id="@Model.Meal.MatrattId">Lägg till</a>
+
+            @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+            {
+                <br/>
+                <a class="btn btn-danger my-2" asp-controller="Admin" asp-action="RemoveMeal" asp-route-Id="@Model.Meal.MatrattId">Ta bort</a>
+                <a class="btn btn-warning ml-1 my-2" asp-controller="Admin" asp-action="EditPizza" asp-route-Id="@Model.Meal.MatrattId">Redigera</a>
+            }
         </div>
     </div>
 </div>
 
-<hr/>
+<hr />
