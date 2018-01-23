@@ -1,4 +1,8 @@
-﻿<!doctype html>
+﻿@using Microsoft.AspNetCore.Identity
+@using Uppgift2Pizzeria.Data
+@inject SignInManager<ApplicationUser> signInManager
+
+<!doctype html>
 <html lang="en">
 
 <head>
@@ -29,9 +33,18 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Resturant" asp-action="Index">Start</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Account" asp-action="Login" asp-route-returnUrl="MyAccount">Logga in</a>
-                    </li>
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Logout">Logga ut</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login" asp-route-returnUrl="MyAccount">Logga in</a>
+                        </li>
+                    }
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Account" asp-action="MyAccount">Mina sidor</a>
                     </li>
@@ -44,12 +57,12 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Resturant" asp-action="Checkout">Bekräfta order</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin</a>
-                    </li>
-                    @*<li class="nav-item">
-                            <a class="nav-link" asp-controller="Resturant" asp-action="LoggOut">Logga ut</a>
-                        </li>*@
+                    @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin</a>
+                        </li>
+                    }
                 </ul>
             </div>
             <!-- //sidebar-->

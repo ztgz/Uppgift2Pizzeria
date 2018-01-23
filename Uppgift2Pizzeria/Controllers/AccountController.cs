@@ -99,6 +99,13 @@ namespace Uppgift2Pizzeria.Controllers
 
             return View();
         }
+        
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+
+            return RedirectToAction("Index", "Resturant");
+        }
 
         public async Task<IActionResult> MyAccount()
         {
