@@ -19,7 +19,8 @@ namespace Uppgift2Pizzeria.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly TomasosContext _context;
 
-        public AccountController(UserManager<ApplicationUser> usrMgr, SignInManager<ApplicationUser> signInMgr, TomasosContext context)
+        public AccountController(UserManager<ApplicationUser> usrMgr, 
+            SignInManager<ApplicationUser> signInMgr, TomasosContext context)
         {
             _userManager = usrMgr;
             _signInManager = signInMgr;
@@ -50,6 +51,7 @@ namespace Uppgift2Pizzeria.Controllers
                 //Try to create a new Identity user
                 var result = await _userManager.CreateAsync(newUser, user.Losenord);
 
+                //if account creation was succesfull
                 if (result.Succeeded)
                 {
                     //hide password in old user table
@@ -58,6 +60,10 @@ namespace Uppgift2Pizzeria.Controllers
                     //add and save user details
                     _context.Kund.Add(user);
                     _context.SaveChanges();
+
+                    //...add 'RegularUser' to AspNetUserRole
+                    var currentUser = await _userManager.FindByNameAsync(newUser.UserName);
+                    await _userManager.AddToRoleAsync(currentUser, "RegularUser");
 
                     return RedirectToAction("Login");
                 }
