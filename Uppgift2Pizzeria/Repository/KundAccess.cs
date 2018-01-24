@@ -30,6 +30,11 @@ namespace Uppgift2Pizzeria.Repository
             return GetKundByName(currentUser.UserName);
         }
 
+        public Kund GetKundFromCurrentUser(HttpContext httpContext)
+        {
+            return GetKundByName(httpContext.User.Identity.Name);
+        }
+
         public void SaveKund(Kund kund)
         {
             //hide password in old Kund-table

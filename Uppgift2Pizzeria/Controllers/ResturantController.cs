@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Uppgift2Pizzeria.Data;
 using Uppgift2Pizzeria.Models;
+using Uppgift2Pizzeria.Repository;
 using Uppgift2Pizzeria.ViewModels;
 
 namespace Uppgift2Pizzeria.Controllers
@@ -19,19 +20,17 @@ namespace Uppgift2Pizzeria.Controllers
 
         private readonly TomasosContext _context;
 
-        //They recive free pizzas for every 100 points 
-        private const int FreePizza = 100;
+        private KundAccess kundAccess;
+
 
         public ResturantController(TomasosContext context)
         {
             _context = context;
+            kundAccess = new KundAccess(_context);
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
+        public IActionResult Index() => View();
+        
          public IActionResult Menu()
         {
             //Create a model for the view
@@ -89,10 +88,7 @@ namespace Uppgift2Pizzeria.Controllers
         }
 
         [Authorize]
-        public IActionResult Checkout()
-        {
-            return View(GetCheckOutModel());
-        }
+        public IActionResult Checkout() =>  View(GetCheckOutModel());
 
         private CheckoutViewModel GetCheckOutModel()
         {
@@ -101,23 +97,22 @@ namespace Uppgift2Pizzeria.Controllers
             model.Meals = GetBasket();
 
             //Get information about logged in user, contains name and bonus points
-            model.User = _context.Kund.SingleOrDefault(k => k.AnvandarNamn == GetUsernname());
+            model.User = kundAccess.GetKundFromCurrentUser(HttpContext);
 
             //The amount of bonus points the order would give
-            model.BonusPointsAdded = CalculatePoints(model);
+            model.BonusPointsAdded = BonusProgram.CalculatePoints(model);
 
             //The amount of bonus points that would be deducted for free pizzas
-            model.BonusPointsRemoved = CalculateDeductionPoints(model);
+            model.BonusPointsRemoved = BonusProgram.CalculateDeductionPoints(model);
 
             //Which pizzas that would be free
-            model.FreeMeals = GetFreePizzas(model);
+            model.FreeMeals = BonusProgram.GetFreePizzas(model);
 
-            //if premium user buys 3 or more meals
+            //if premium user buys 3 or more meals...
             if(User.IsInRole("PremiumUser") && model.Meals.Count >= 3)
             {
-                model.Discount = (int) ( 
-                    (model.Meals.Sum(p => p.Pris) - model.FreeMeals.Sum(fm => fm.Pris)) 
-                        * 0.2f );
+                //...there is a discount on the meal
+                model.Discount = BonusProgram.Discount(model);
             }
 
             return model;
@@ -135,15 +130,13 @@ namespace Uppgift2Pizzeria.Controllers
                 Bestallning order = new Bestallning();
 
                 //Get the customer
-                Kund user = _context.Kund.SingleOrDefault(k => k.AnvandarNamn == GetUsernname());
+                Kund user = kundAccess.GetKundFromCurrentUser(HttpContext);
 
                 //Change the number of bonus points of customers account if premium user
                 if (User.IsInRole("PremiumUser"))
                 {
                     user.Poang += vm.BonusPointsAdded - vm.BonusPointsRemoved;
                 }
-
-                //_context.SaveChanges();
 
                 //Set the customer who orded the food
                 order.Kund = user;
@@ -159,6 +152,7 @@ namespace Uppgift2Pizzeria.Controllers
                 
                 //Add order to database
                 _context.Add(order);
+
                 _context.SaveChanges();
 
                 //Add meals to order as long as basket is not empty
@@ -196,14 +190,12 @@ namespace Uppgift2Pizzeria.Controllers
         }
 
         [Authorize]
-        public IActionResult Confirmed()
-        {
-            return View();
-        }
+        public IActionResult Confirmed() => View();
 
         [Authorize]
         public IActionResult EmptyBasket()
         {
+            //Save basket with an empty list
             SaveBasket(new List<Matratt>());
 
             return RedirectToAction("Checkout");
@@ -216,22 +208,19 @@ namespace Uppgift2Pizzeria.Controllers
 
             for (int i = 0; i < meals.Count; i++)
             {
+                //If meal with the id is found...
                 if (meals[i].MatrattId == id)
                 {
+                    //...remove it...
                     meals.RemoveAt(i);
-
+                    //..and save database changes...
                     SaveBasket(meals);
-
+                    //..then leave loop..
                     break;
                 }
             }
 
             return RedirectToAction("Checkout");
-        }
-
-        private string GetUsernname()
-        {
-            return HttpContext.User.Identity.Name;
         }
 
         private List<Matratt> GetBasket()
@@ -261,45 +250,5 @@ namespace Uppgift2Pizzeria.Controllers
             HttpContext.Session.SetString(SessionBasket, serialized);
         }
 
-        private int CalculatePoints(CheckoutViewModel vm)
-        {
-            return (vm.Meals.Count * 10);
-        }
-
-        private int CalculateDeductionPoints(CheckoutViewModel vm)
-        {
-            int totalPoints = vm.BonusPointsAdded + vm.User.Poang;
-
-            //There neeeds to be pizzas in order to recive free pizza
-            int pizzasInOrder = vm.Meals.Count(m => m.MatrattTyp == 1);
-
-            int pointsToDetuct = 0;
-
-            if (totalPoints / FreePizza > 0 && pizzasInOrder > 0)
-            {
-                pointsToDetuct = Math.Min(totalPoints / FreePizza, pizzasInOrder);
-            }
-
-            return pointsToDetuct*FreePizza;
-        }
-
-        private List<Matratt> GetFreePizzas(CheckoutViewModel vm)
-        {
-            List<Matratt> freeMeals = new List<Matratt>();
-            
-            //Calculate the number of pizzas that will be deducted
-            int numbersOfFree = CalculateDeductionPoints(vm) / FreePizza;
-
-            if (numbersOfFree > 0)
-            {
-                //Get all the pizzas in the order
-                var allPizzas = vm.Meals.Where(m => m.MatrattTyp == 1).OrderBy(m => m.Pris).ToList();
-
-                //Return the free pizzas
-                freeMeals = allPizzas.GetRange(0, numbersOfFree);
-            }
-            return freeMeals;
-        }
-        
     }
 }
