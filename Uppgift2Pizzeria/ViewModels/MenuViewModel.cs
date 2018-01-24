@@ -3,12 +3,13 @@ using Uppgift2Pizzeria.Models;
 
 namespace Uppgift2Pizzeria.ViewModels
 {
-    public class MenuModel
+    public class MenuViewModel
     {
         public Matratt Meal { get; set; }
         public List<Produkt> Ingridients;
+        public Kund User { get; set; }
 
-        public MenuModel()
+        public MenuViewModel()
         {
             Ingridients = new List<Produkt>();
         }

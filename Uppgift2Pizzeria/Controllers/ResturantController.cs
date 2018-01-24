@@ -6,7 +6,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Uppgift2Pizzeria.Data;
 using Uppgift2Pizzeria.Models;
 using Uppgift2Pizzeria.ViewModels;
 
@@ -31,7 +30,7 @@ namespace Uppgift2Pizzeria.Controllers
          public IActionResult Menu()
         {
             //Create a model for the view
-            var model = new List<MenuModel>();
+            var model = new List<MenuViewModel>();
 
             //Get all the meals
             var meals = _context.Matratt.Include(m => m.MatrattProdukt).ToList();
@@ -40,7 +39,7 @@ namespace Uppgift2Pizzeria.Controllers
             foreach (var meal in meals)
             {
                 //...create a new menuItem ...
-                MenuModel menuItem = new MenuModel();
+                MenuViewModel menuItem = new MenuViewModel();
 
                 //... and add the meal to the menuItem...
                 menuItem.Meal = meal;

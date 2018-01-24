@@ -1,5 +1,5 @@
 ﻿@using Uppgift2Pizzeria.ViewModels
-@model List<MenuModel>
+@model List<MenuViewModel>
 
 <div class="text-right mt-3 mb-4">
     <a asp-controller="Resturant" asp-action="Checkout" class="btn btn-success">Bekräfta order</a>
@@ -14,7 +14,7 @@
     <h2 class="text-outline text-center">@foodTypes[i]</h2>
     <hr />
     <ul class="non-decorated">
-        @foreach (MenuModel meal in Model)
+        @foreach (MenuViewModel meal in Model)
         {
             if (meal.Meal.MatrattTyp == i+1)
             {

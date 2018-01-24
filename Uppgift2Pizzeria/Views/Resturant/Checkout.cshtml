@@ -29,7 +29,7 @@
         <a asp-controller="Resturant" asp-action="Menu" class="btn btn-dark mr-1 my-1">Tillbaka</a>
         @if (Model.Count > 0)
         {
-            <a asp-controller="" asp-action ="EmptyBasket" class="btn btn-secondary mr-1 my-1">Ta bort order</a>
+            <a asp-controller="Resturant" asp-action ="EmptyBasket" class="btn btn-secondary mr-1 my-1">Ta bort order</a>
             <a asp-controller="Resturant" asp-action="SendOrder" class="btn btn-warning my-1">Bekräfta</a>
         }
     </div>
