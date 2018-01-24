@@ -29,6 +29,7 @@ namespace Uppgift2Pizzeria.Controllers
 
             model.FoodTypes = new List<SelectListItem>();
 
+            //Get all different foodtypes
             foreach (var type in _context.MatrattTyp)
             {
                 model.FoodTypes.Add(new SelectListItem
@@ -40,6 +41,7 @@ namespace Uppgift2Pizzeria.Controllers
 
             model.Products = new List<SelectListItem>();
 
+            //Get all different ingridients
             foreach (var product in _context.Produkt)
             {
                 model.Products.Add(new SelectListItem
@@ -58,20 +60,24 @@ namespace Uppgift2Pizzeria.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                //Save new meal to database
                 Matratt meal = vm.Meal;
 
                 _context.Matratt.Add(meal);
 
                 _context.SaveChanges();
 
-
+                //Add connection between meal and ingridients to database
                 foreach (var ingridientId in vm.SelectedIngridients)
                 {
-                    //try to find the product
+                    //try to find ingrident in product list the product
                     Produkt product = _context.Produkt.FirstOrDefault(p => p.ProduktId == int.Parse(ingridientId));
 
+                    //If product is found...
                     if (product != null)
                     {
+                        //...add connection to database
                         MatrattProdukt mp = new MatrattProdukt()
                         {
                             MatrattId = meal.MatrattId,
@@ -90,16 +96,19 @@ namespace Uppgift2Pizzeria.Controllers
 
         public IActionResult RemoveMeal(int id)
         {
+            //Find the meal in the database
             var matratt = _context.Matratt.FirstOrDefault(m => m.MatrattId == id);
 
+            //if meal is found...
             if (matratt != null)
             {
-                //remove all matrattProdukt that contains the meal
+                //...remove all matrattProdukt that contains the meal...
                 foreach (var matrattProdukt in _context.MatrattProdukt.Where(m => m.MatrattId == id))
                 {
                     _context.MatrattProdukt.Remove(matrattProdukt);
                 }
 
+                //...then remove the meal
                 _context.Remove(matratt);
 
                 _context.SaveChanges();
@@ -150,14 +159,19 @@ namespace Uppgift2Pizzeria.Controllers
         {
             if (ModelState.IsValid)
             {
+                //Find the meal, and include connection with ingridients
                 Matratt meal = _context.Matratt.Include(m => m.MatrattProdukt).FirstOrDefault(m => m.MatrattId == vm.Meal.MatrattId);
 
+                //if meal is found...
                 if (meal != null)
                 {
+                    //...set price...
                     meal.Pris = vm.Meal.Pris;
+
+                    //...and type...
                     meal.MatrattTyp = vm.Meal.MatrattTyp;
 
-                    //add missing products to meal
+                    //...then add missing ingridients to database...
                     foreach (var productId in vm.SelectedIngridients)
                     {
                         if (meal.MatrattProdukt.Count(m => m.ProduktId == int.Parse(productId)) == 0)
@@ -173,7 +187,7 @@ namespace Uppgift2Pizzeria.Controllers
                         }
                     }
 
-                    //remove products
+                    //...the ingridients that has been should be removed from the database
                     foreach (MatrattProdukt matrattProdukt in meal.MatrattProdukt)
                     {
                         //if selected ingridients dosen't contain the product...
@@ -203,13 +217,16 @@ namespace Uppgift2Pizzeria.Controllers
         {
             if (ModelState.IsValid)
             {
+                //If ingridient doesn't allready exsist...
                 if (_context.Produkt.Count(p => p.ProduktNamn == vm.Name) == 0)
                 {
+                    //...create ingridient...
                     Produkt product = new Produkt
                     {
                         ProduktNamn = vm.Name
                     };
 
+                    //...and add it to database
                     _context.Produkt.Add(product);
 
                     _context.SaveChanges();
@@ -221,6 +238,7 @@ namespace Uppgift2Pizzeria.Controllers
 
         public IActionResult Users()
         {
+            //Vi vill inte få name på admin som är inloggad
             List<Kund> model = _context.Kund.Where(k => k.AnvandarNamn != HttpContext.User.Identity.Name).ToList();
 
             return View(model);
@@ -236,7 +254,11 @@ namespace Uppgift2Pizzeria.Controllers
         public IActionResult OrderDetails(int orderId)
         {
             OrderDetailsViewModel model = new OrderDetailsViewModel();
+
+            //Get order
             model.Bestallning = _context.Bestallning.FirstOrDefault(b => b.BestallningId == orderId);
+
+            //Get orderdetails and include the meals of the order detail
             model.BestallningMatratt = _context.BestallningMatratt
                 .Include(bm => bm.Matratt)
                 .Where(bm =>  bm.BestallningId == orderId)
@@ -247,7 +269,7 @@ namespace Uppgift2Pizzeria.Controllers
 
         public IActionResult RemoveOrder(int orderId)
         {
-            //remove the orderdetails
+            //remove orderdetails
             foreach (BestallningMatratt bm in _context.BestallningMatratt.Where(b => b.BestallningId == orderId))
             {
                 _context.Remove(bm);
@@ -265,8 +287,12 @@ namespace Uppgift2Pizzeria.Controllers
 
         public IActionResult OrderDelivered(int orderId)
         {
+            //Find order...
             Bestallning order = _context.Bestallning.FirstOrDefault(b => b.BestallningId == orderId);
+
+            //... and set that it's deliverd
             order.Levererad = true;
+
             _context.SaveChanges();
 
             return RedirectToAction("Orders");
@@ -274,7 +300,9 @@ namespace Uppgift2Pizzeria.Controllers
 
         public IActionResult ListOfOrders(bool delivered)
         {
-            var model = _context.Bestallning.Where(b => b.Levererad == delivered).OrderByDescending(b => b.BestallningDatum).ToList();
+            //Get list of orders and sort them by the newest orders first
+            var model = _context.Bestallning.Where(b => b.Levererad == delivered)
+                .OrderByDescending(b => b.BestallningDatum).ToList();
 
             return PartialView("_ListOfOrders", model);
         }
