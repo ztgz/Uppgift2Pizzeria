@@ -226,6 +226,8 @@ namespace Uppgift2Pizzeria.Controllers
                     meals.RemoveAt(i);
 
                     SaveBasket(meals);
+
+                    break;
                 }
             }
 
