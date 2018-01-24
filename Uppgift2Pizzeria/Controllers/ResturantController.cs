@@ -17,18 +17,13 @@ namespace Uppgift2Pizzeria.Controllers
     {
         private const string SessionBasket = "_Basket";
 
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private TomasosContext _context;
+        private readonly TomasosContext _context;
 
         //They recive free pizzas for every 100 points 
         private const int FreePizza = 100;
 
-        public ResturantController(UserManager<ApplicationUser> usrMgr,
-            SignInManager<ApplicationUser> signInMgr, TomasosContext context)
+        public ResturantController(TomasosContext context)
         {
-            _userManager = usrMgr;
-            _signInManager = signInMgr;
             _context = context;
         }
 

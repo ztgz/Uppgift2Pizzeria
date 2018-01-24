@@ -15,6 +15,5 @@ namespace Uppgift2Pizzeria.ViewModels
         [StringLength(20, ErrorMessage = "Lösenord kan inte vara längre än 20 tecken.")]
         [UIHint("Password")]
         public string Losenord { get; set; }
-
     }
 }

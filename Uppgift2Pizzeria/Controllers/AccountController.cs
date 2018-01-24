@@ -20,7 +20,7 @@ namespace Uppgift2Pizzeria.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly TomasosContext _context;
 
-        public AccountController(UserManager<ApplicationUser> usrMgr, 
+        public AccountController(UserManager<ApplicationUser> usrMgr,
             SignInManager<ApplicationUser> signInMgr, TomasosContext context)
         {
             _userManager = usrMgr;
@@ -57,7 +57,7 @@ namespace Uppgift2Pizzeria.Controllers
                 {
                     //hide password in old user table
                     user.Losenord = "***";
-                    
+
                     //add and save user details
                     _context.Kund.Add(user);
                     _context.SaveChanges();
@@ -99,7 +99,7 @@ namespace Uppgift2Pizzeria.Controllers
 
             return View();
         }
-        
+
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -154,9 +154,50 @@ namespace Uppgift2Pizzeria.Controllers
 
             vm.Role = await GetRoleOfUser(username);
 
-            return PartialView("_UserInfo" ,vm);
+            return PartialView("_UserInfo", vm);
         }
-       
+
+        public async Task<IActionResult> ChangePassword()
+        {
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+
+            PasswordChangeViewModel model = new PasswordChangeViewModel();
+
+            model.AnvandarNamn = _context.Kund.FirstOrDefault(k => k.AnvandarNamn == currentUser.UserName).AnvandarNamn;
+
+            if (model.AnvandarNamn != null)
+            {
+                return View(model);
+            }
+
+            return RedirectToAction("Login");
+        }
+ 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(PasswordChangeViewModel userModel)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser user = await _userManager.FindByNameAsync(userModel.AnvandarNamn);
+
+                var result = await _userManager.ChangePasswordAsync(user, userModel.GammaltLosenord, userModel.NyttLosenord);
+
+                if (result.Succeeded)
+                {
+                    return View("PasswordConfirmed");
+                }
+                else
+                {
+                    return View("PasswordDenied");
+                }
+            }
+
+            return RedirectToAction("ChangePassword");
+        }
+
+        public IActionResult PasswordConfirmed(bool changed) => View(changed);
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ChangeUserRole(string userName)
         {
@@ -175,7 +216,7 @@ namespace Uppgift2Pizzeria.Controllers
                 //...and add premium user role
                 await _userManager.AddToRoleAsync(user, "PremiumUser");
             }
-            else if(role == "PremiumUser")
+            else if (role == "PremiumUser")
             {
                 //...remove premium user role
                 await _userManager.RemoveFromRoleAsync(user, "PremiumUser");
