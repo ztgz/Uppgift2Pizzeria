@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Rewrite.Internal.ApacheModRewrite;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Uppgift2Pizzeria.Data;
 using Uppgift2Pizzeria.Models;
+using Uppgift2Pizzeria.Repository;
 using Uppgift2Pizzeria.ViewModels;
 
 namespace Uppgift2Pizzeria.Controllers
@@ -19,6 +15,7 @@ namespace Uppgift2Pizzeria.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly TomasosContext _context;
+        private KundAccess kundAccess;
 
         public AccountController(UserManager<ApplicationUser> usrMgr,
             SignInManager<ApplicationUser> signInMgr, TomasosContext context)
@@ -26,6 +23,7 @@ namespace Uppgift2Pizzeria.Controllers
             _userManager = usrMgr;
             _signInManager = signInMgr;
             _context = context;
+            kundAccess = new KundAccess(_context);
         }
 
         [AllowAnonymous]
@@ -55,12 +53,8 @@ namespace Uppgift2Pizzeria.Controllers
                 //if account creation was succesfull
                 if (result.Succeeded)
                 {
-                    //hide password in old user table
-                    user.Losenord = "***";
-
-                    //add and save user details
-                    _context.Kund.Add(user);
-                    _context.SaveChanges();
+                    //... save kund in database
+                    kundAccess.SaveKund(user);
 
                     //...add 'RegularUser' to AspNetUserRole
                     var currentUser = await _userManager.FindByNameAsync(newUser.UserName);
@@ -82,7 +76,7 @@ namespace Uppgift2Pizzeria.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Login(UserModel userModel, string returnUrl)
+        public async Task<IActionResult> Login(UserViewModel userModel, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -109,9 +103,8 @@ namespace Uppgift2Pizzeria.Controllers
 
         public async Task<IActionResult> MyAccount()
         {
-            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-
-            var model = _context.Kund.FirstOrDefault(k => k.AnvandarNamn == currentUser.UserName);
+            //Get kund based on logged in user
+            var model = await kundAccess.GetKundFromCurrentUser(_userManager, HttpContext);
 
             if (model != null)
                 return View(model);
@@ -125,22 +118,9 @@ namespace Uppgift2Pizzeria.Controllers
         {
             if (ModelState.IsValid)
             {
-                var kund = _context.Kund.SingleOrDefault(k => k.AnvandarNamn == userModel.AnvandarNamn);
-
-                if (kund != null)
-                {
-                    kund.Namn = userModel.Namn;
-                    kund.Gatuadress = userModel.Gatuadress;
-                    kund.Postnr = userModel.Postnr;
-                    kund.Postort = userModel.Postort;
-                    kund.Email = userModel.Email;
-                    kund.Telefon = userModel.Telefon;
-
-                    _context.SaveChanges();
-                }
+                kundAccess.UpdateKund(userModel);
 
                 return View("Updated");
-
             }
 
             return View();
@@ -150,7 +130,8 @@ namespace Uppgift2Pizzeria.Controllers
         public async Task<IActionResult> GetUserInfo(string username)
         {
             UserRoleViewModel vm = new UserRoleViewModel();
-            vm.User = _context.Kund.FirstOrDefault(k => k.AnvandarNamn == username);
+
+            vm.User = kundAccess.GetKundByName(username);
 
             vm.Role = await GetRoleOfUser(username);
 
@@ -159,11 +140,12 @@ namespace Uppgift2Pizzeria.Controllers
 
         public async Task<IActionResult> ChangePassword()
         {
-            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-
             PasswordChangeViewModel model = new PasswordChangeViewModel();
 
-            model.AnvandarNamn = _context.Kund.FirstOrDefault(k => k.AnvandarNamn == currentUser.UserName).AnvandarNamn;
+            Kund kund = await kundAccess.GetKundFromCurrentUser(_userManager, HttpContext);
+
+            //Send username to change password form
+            model.AnvandarNamn = kund.AnvandarNamn;
 
             if (model.AnvandarNamn != null)
             {

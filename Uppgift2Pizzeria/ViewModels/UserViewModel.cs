@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Uppgift2Pizzeria.ViewModels
 {
-    public class UserModel
+    public class UserViewModel
     {
         [DisplayName("Användarnamn")]
         [Required(ErrorMessage = "Användarnamn är obligatoriskt")]
