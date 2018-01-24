@@ -7,7 +7,6 @@ namespace Uppgift2Pizzeria.ViewModels
     {
         public Matratt Meal { get; set; }
         public List<Produkt> Ingridients;
-        public Kund User { get; set; }
 
         public MenuViewModel()
         {

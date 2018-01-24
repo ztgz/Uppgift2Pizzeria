@@ -86,7 +86,13 @@ namespace Uppgift2Pizzeria.Controllers
         [Authorize]
         public IActionResult Checkout()
         {
-            return View(GetBasket());
+            CheckoutViewModel model = new CheckoutViewModel();
+            model.Meals = GetBasket();
+
+            //Get information about logged in user, contains name and bonus points
+            model.User = _context.Kund.SingleOrDefault(k => k.AnvandarNamn == GetUsernname());
+
+            return View(model);
         }
 
         [Authorize]
