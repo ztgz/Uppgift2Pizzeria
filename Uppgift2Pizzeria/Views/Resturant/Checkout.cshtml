@@ -1,5 +1,5 @@
 ﻿@model CheckoutViewModel
-    
+
 <div class="row">
     <div class="col-12 col-md-8 col-lg-6 offset-md-2 offset-lg-3">
         <h1 class="text-outline">Orders</h1>
@@ -13,22 +13,69 @@
                 <tr>
                     <td class="pr-2">@meal.MatrattNamn</td>
                     <td class="pr-3">@meal.Pris kr</td>
-                    <td><a asp-controller="Resturant" asp-action="RemoveItemFromBasket" asp-route-id="@meal.MatrattId"
-                           class="btn btn-danger">Ta bort</a></td>
+                    <td>
+                        <a asp-controller="Resturant" asp-action="RemoveItemFromBasket" asp-route-id="@meal.MatrattId"
+                           class="btn btn-danger">Ta bort</a>
+                    </td>
                 </tr>
             }
         </table>
 
-        <br/>
+        @if (User.IsInRole("PremiumUser") && Model.FreeMeals.Count > 0)
+        {
+            <table class="text-outline">
+                <tr class="text-gray">
+                    <th>Rabbat</th>
+                    <th> Pris</th>
+                </tr>
+                @foreach (Matratt meal in Model.FreeMeals)
+                {
+                    <tr>
+                        <td class="pr-2">@meal.MatrattNamn</td>
+                        <td class="pr-3">-@meal.Pris kr</td>
+                    </tr>
+                }
+            </table>
+        }
 
-        <h3 class="text-gray text-outline">Totalt pris = @Model.Meals.Sum(m => m.Pris) kr</h3>
+        <br />
         
-        <br/>
+
+        @if (User.IsInRole("PremiumUser"))
+        {
+            if (Model.Discount > 0)
+            {
+                <h3>20% rabbat på köpet (@Model.Discount kr)</h3>
+            }
+
+            int totalAmount = Model.Meals.Sum(m => m.Pris) - Model.FreeMeals.Sum(m => m.Pris) - Model.Discount;
+            <h3 class="text-gray text-outline">Totalt pris = @totalAmount kr</h3>
+        }
+        else
+        {
+            <h3 class="text-gray text-outline">Totalt pris = @Model.Meals.Sum(m => m.Pris) kr</h3>
+        }
+
+        <br />
+
+
+        @if (User.IsInRole("PremiumUser"))
+        {
+
+            <h2>Bonus-poäng: @Model.User.Poang</h2>
+
+            <h2>+ (@Model.BonusPointsAdded)</h2>
+            <h2>- (@Model.BonusPointsRemoved)</h2>
+            {
+                int totalPoints = Model.User.Poang + Model.BonusPointsAdded - Model.BonusPointsRemoved;
+                <h2>= @totalPoints</h2>
+            }
+        }
 
         <a asp-controller="Resturant" asp-action="Menu" class="btn btn-dark mr-1 my-1">Tillbaka</a>
         @if (Model.Meals.Count > 0)
         {
-            <a asp-controller="Resturant" asp-action ="EmptyBasket" class="btn btn-secondary mr-1 my-1">Ta bort order</a>
+            <a asp-controller="Resturant" asp-action="EmptyBasket" class="btn btn-secondary mr-1 my-1">Ta bort order</a>
             <a asp-controller="Resturant" asp-action="SendOrder" class="btn btn-warning my-1">Bekräfta</a>
         }
     </div>

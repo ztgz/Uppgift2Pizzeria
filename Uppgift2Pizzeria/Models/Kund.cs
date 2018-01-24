@@ -49,6 +49,8 @@ namespace Uppgift2Pizzeria.Models
         [UIHint("Password")]
         public string Losenord { get; set; }
 
+        public int Poang { get; set; }
+
         public ICollection<Bestallning> Bestallning { get; set; }
     }
 }

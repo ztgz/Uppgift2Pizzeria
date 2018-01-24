@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Uppgift2Pizzeria.Data;
 using Uppgift2Pizzeria.Models;
 using Uppgift2Pizzeria.ViewModels;
 
@@ -15,10 +17,18 @@ namespace Uppgift2Pizzeria.Controllers
     {
         private const string SessionBasket = "_Basket";
 
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private TomasosContext _context;
 
-        public ResturantController(TomasosContext context)
+        //They recive free pizzas for every 100 points 
+        private const int FreePizza = 100;
+
+        public ResturantController(UserManager<ApplicationUser> usrMgr,
+            SignInManager<ApplicationUser> signInMgr, TomasosContext context)
         {
+            _userManager = usrMgr;
+            _signInManager = signInMgr;
             _context = context;
         }
 
@@ -86,29 +96,65 @@ namespace Uppgift2Pizzeria.Controllers
         [Authorize]
         public IActionResult Checkout()
         {
+            return View(GetCheckOutModel());
+        }
+
+        private CheckoutViewModel GetCheckOutModel()
+        {
             CheckoutViewModel model = new CheckoutViewModel();
+
             model.Meals = GetBasket();
 
             //Get information about logged in user, contains name and bonus points
             model.User = _context.Kund.SingleOrDefault(k => k.AnvandarNamn == GetUsernname());
 
-            return View(model);
+            //The amount of bonus points the order would give
+            model.BonusPointsAdded = CalculatePoints(model);
+
+            //The amount of bonus points that would be deducted for free pizzas
+            model.BonusPointsRemoved = CalculateDeductionPoints(model);
+
+            //Which pizzas that would be free
+            model.FreeMeals = GetFreePizzas(model);
+
+            //if premium user buys 3 or more meals
+            if(User.IsInRole("PremiumUser") && model.Meals.Count >= 3)
+            {
+                model.Discount = (int) ( 
+                    (model.Meals.Sum(p => p.Pris) - model.FreeMeals.Sum(fm => fm.Pris)) 
+                        * 0.2f );
+            }
+
+            return model;
         }
 
         [Authorize]
         public IActionResult SendOrder()
         {
+            CheckoutViewModel vm = GetCheckOutModel();
+
             var basket = GetBasket();
 
             if (basket.Count > 0)
             {
                 Bestallning order = new Bestallning();
 
-                //Set the customer who orded the food
-                order.Kund = _context.Kund.SingleOrDefault(k => k.AnvandarNamn == GetUsernname());
+                //Get the customer
+                Kund user = _context.Kund.SingleOrDefault(k => k.AnvandarNamn == GetUsernname());
 
+                //Change the number of bonus points of customers account if premium user
+                if (User.IsInRole("PremiumUser"))
+                {
+                    user.Poang += vm.BonusPointsAdded - vm.BonusPointsRemoved;
+                }
+
+                //_context.SaveChanges();
+
+                //Set the customer who orded the food
+                order.Kund = user;
+               
                 //Set the price of the order
-                order.Totalbelopp = basket.Sum(b => b.Pris);
+                order.Totalbelopp = vm.Meals.Sum(m => m.Pris) - vm.FreeMeals.Sum(m => m.Pris)-vm.Discount;
 
                 //Date of order
                 order.BestallningDatum = DateTime.Now;
@@ -217,5 +263,46 @@ namespace Uppgift2Pizzeria.Controllers
             //and save it in session
             HttpContext.Session.SetString(SessionBasket, serialized);
         }
+
+        private int CalculatePoints(CheckoutViewModel vm)
+        {
+            return (vm.Meals.Count * 10);
+        }
+
+        private int CalculateDeductionPoints(CheckoutViewModel vm)
+        {
+            int totalPoints = vm.BonusPointsAdded + vm.User.Poang;
+
+            //There neeeds to be pizzas in order to recive free pizza
+            int pizzasInOrder = vm.Meals.Count(m => m.MatrattTyp == 1);
+
+            int pointsToDetuct = 0;
+
+            if (totalPoints / FreePizza > 0 && pizzasInOrder > 0)
+            {
+                pointsToDetuct = Math.Min(totalPoints / FreePizza, pizzasInOrder);
+            }
+
+            return pointsToDetuct*FreePizza;
+        }
+
+        private List<Matratt> GetFreePizzas(CheckoutViewModel vm)
+        {
+            List<Matratt> freeMeals = new List<Matratt>();
+            
+            //Calculate the number of pizzas that will be deducted
+            int numbersOfFree = CalculateDeductionPoints(vm) / FreePizza;
+
+            if (numbersOfFree > 0)
+            {
+                //Get all the pizzas in the order
+                var allPizzas = vm.Meals.Where(m => m.MatrattTyp == 1).OrderBy(m => m.Pris).ToList();
+
+                //Return the free pizzas
+                freeMeals = allPizzas.GetRange(0, numbersOfFree);
+            }
+            return freeMeals;
+        }
+        
     }
 }
