@@ -23,16 +23,16 @@ namespace Uppgift2Pizzeria.Repository
             return _context.Kund.FirstOrDefault(k => k.AnvandarNamn == username);
         }
 
+        public Kund GetKundFromCurrentUser(HttpContext httpContext)
+        {
+            return GetKundByName(httpContext.User.Identity.Name);
+        }
+
         public async Task<Kund> GetKundFromCurrentUser(UserManager<ApplicationUser> userManager, HttpContext httpContext)
         {
             var currentUser = await userManager.GetUserAsync(httpContext.User);
 
             return GetKundByName(currentUser.UserName);
-        }
-
-        public Kund GetKundFromCurrentUser(HttpContext httpContext)
-        {
-            return GetKundByName(httpContext.User.Identity.Name);
         }
 
         public void SaveKund(Kund kund)
