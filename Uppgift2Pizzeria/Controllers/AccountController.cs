@@ -158,21 +158,30 @@ namespace Uppgift2Pizzeria.Controllers
         }
        
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpgradeUser(string userName)
+        public async Task<IActionResult> ChangeUserRole(string userName)
         {
+            //...get the user
+            ApplicationUser user = await GetApplicationUser(userName);
+
+            //Role of the user
             string role = await GetRoleOfUser(userName);
 
             //If user is a regular user...
             if (role == "RegularUser")
             {
-                //...get the user
-                ApplicationUser user = await GetApplicationUser(userName);
-
                 //...remove regular user role
                 await _userManager.RemoveFromRoleAsync(user, "RegularUser");
 
                 //...and add premium user role
                 await _userManager.AddToRoleAsync(user, "PremiumUser");
+            }
+            else if(role == "PremiumUser")
+            {
+                //...remove premium user role
+                await _userManager.RemoveFromRoleAsync(user, "PremiumUser");
+
+                //...and add regular user role
+                await _userManager.AddToRoleAsync(user, "RegularUser");
             }
 
             return RedirectToAction("Users", "Admin");
