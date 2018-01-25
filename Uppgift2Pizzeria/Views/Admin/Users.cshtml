@@ -1,15 +1,18 @@
 ﻿@model List<Kund>
 
-<div class="row">
-    <div class="col-8">
+@*<h1 class="text-outline mb-2">Användare och roller</h1>*@    
+
+<div class="row mt-2">
+    <div class="col-12 col-sm-7 col-md-5 col-lg-3">
         <table>
-            <tr><th>Användare</th></tr>
+            <tr><th class="text-outline">Användare</th><th></th></tr>
             @foreach (var customer in Model)
             {
                 <tr>
-                    <td>@customer.AnvandarNamn</td>
+                    <td class="text-outline text-gray">@customer.AnvandarNamn</td>
+
                     <td>
-                        <a class="btn btn-warning"
+                        <a class="btn btn-light m-1"
                            asp-controller="Account"
                            asp-action="GetUserInfo"
                            asp-route-username="@customer.AnvandarNamn"
@@ -22,7 +25,11 @@
             }
         </table>
     </div>
-    <div class="col-4" id="infoBox">
+    <div class="col-12 col-sm-4" id="infoBox">
     </div>
+</div>
+
+<div class="row">
+    <a class="btn btn-secondary mt-3 ml-2" asp-controller="Admin" asp-action="Index">Tillbaka</a>
 </div>
 

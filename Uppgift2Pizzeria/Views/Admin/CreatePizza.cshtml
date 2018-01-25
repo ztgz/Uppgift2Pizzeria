@@ -5,6 +5,9 @@
 
         <form method="post" asp-action="CreatePizza">
             <div asp-validation-summary="All" class="alert-dark"></div>
+            <input type="hidden" asp-for="FoodTypes" class="form-control" value=@Model.FoodTypes />
+            <input type="hidden" asp-for="Products" class="form-control" value=@Model.Products />
+
             <div class="form-group">
                 <label asp-for="Meal.MatrattNamn"></label>
                 <input asp-for="Meal.MatrattNamn" class="form-control" />
@@ -21,8 +24,9 @@
             </div>
             
             <div class="form-group">
-                <label>Ingridienser</label>
+                <label>Ingrediens</label>
                 <select asp-for="SelectedIngridients" asp-items="@Model.Products" multiple="multiple" class="form-control"></select>
+                <span asp-validation-for="SelectedIngridients" class="alert-dark"></span>
             </div>
 
 

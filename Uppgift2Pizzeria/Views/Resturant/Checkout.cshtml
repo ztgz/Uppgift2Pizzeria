@@ -39,13 +39,12 @@
         }
 
         <br />
-        
 
         @if (User.IsInRole("PremiumUser"))
         {
             if (Model.Discount > 0)
             {
-                <h3>20% rabbat på köpet (@Model.Discount kr)</h3>
+                <h3 class="text-outline">20% rabbat på köpet (@Model.Discount kr)</h3>
             }
 
             int totalAmount = Model.Meals.Sum(m => m.Pris) - Model.FreeMeals.Sum(m => m.Pris) - Model.Discount;
@@ -58,17 +57,16 @@
 
         <br />
 
-
         @if (User.IsInRole("PremiumUser"))
         {
-
-            <h2>Bonus-poäng: @Model.User.Poang</h2>
-
-            <h2>+ (@Model.BonusPointsAdded)</h2>
-            <h2>- (@Model.BonusPointsRemoved)</h2>
+            
+            <h2>Bonus-poäng</h2>
+            <h3 class="text-outline text-gray">Tidigare: @Model.User.Poang</h3>
+            <h3 class="text-outline text-gray">Detta köp: + @Model.BonusPointsAdded</h3>
+            <h3 class="text-outline text-gray">Gratis pizza: - @Model.BonusPointsRemoved</h3>
             {
                 int totalPoints = Model.User.Poang + Model.BonusPointsAdded - Model.BonusPointsRemoved;
-                <h2>= @totalPoints</h2>
+                <h3 class="text-outline">Efter betallning: @totalPoints</h3>
             }
         }
 

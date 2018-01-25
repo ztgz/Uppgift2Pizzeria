@@ -52,6 +52,21 @@
         filter: grayscale(0%);
     }
 
+.small-box {
+    width: 100%;
+    height: 10vw;
+
+    min-height: 180px;
+
+    -webkit-filter: grayscale(15%);
+    filter: grayscale(15%);
+}
+
+    .small-box:hover {
+        -webkit-filter: grayscale(0%);
+        filter: grayscale(0%);
+    }
+
 .pizza-oven-background {
     background-image: url('../images/pizza-oven.jpg');
     background-size: cover;
@@ -64,6 +79,11 @@
 
 .book-backgrund {
     background-image: url('../images/book.jpg');
+    background-size: cover;
+}
+
+.morot-backgound {
+    background-image: url('../images/morot.jpg');
     background-size: cover;
 }
 
@@ -98,4 +118,8 @@ a.fill-div {
 
 .text-gray {
     color: gray;
+}
+
+#listOfOrders {
+    border-right: 1px solid black;
 }

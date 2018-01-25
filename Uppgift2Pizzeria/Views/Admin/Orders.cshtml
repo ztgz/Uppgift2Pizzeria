@@ -1,8 +1,8 @@
 ﻿@model List<Bestallning>
 
 <div class="row">
-    <div class="col-6">
-        <a class="btn btn-secondary"
+    <div class="col-12">
+        <a class="btn btn-secondary mt-2 mr-2"
            asp-controller="Admin"
            asp-action="ListOfOrders"
            asp-route-delivered="@false"
@@ -10,7 +10,7 @@
            data-ajax-method="get"
            data-ajax-mode="append"
            data-ajax-update="#listOfOrders">Ej levereade ordrar</a>
-        <a class="btn btn-secondary"
+        <a class="btn btn-secondary mt-2 mr-2"
            asp-controller="Admin"
            asp-action="ListOfOrders"
            asp-route-delivered="@true"
@@ -24,7 +24,7 @@
 </div>
 
 <div class="row">
-    <div class="col-6" id="listOfOrders">
+    <div class="col-12 col-sm-6" id="listOfOrders">
     </div>
-    <div class="col-6" id="infoBox"></div>
+    <div class="col-11 col-sm-5 overlayBox ml-2" id="infoBox"></div>
 </div>

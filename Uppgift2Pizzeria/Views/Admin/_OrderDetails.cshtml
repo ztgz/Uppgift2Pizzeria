@@ -13,7 +13,7 @@
 else
 {
     <p>Leveransstatus: Ej levererad</p>
-    <a class="btn btn-success"
+    <a class="btn btn-success mt-1 mr-2"
        asp-controller="Admin"
        asp-action="OrderDelivered"
        asp-route-orderId="@Model.Bestallning.BestallningId">
@@ -21,6 +21,6 @@ else
     </a>
 }
 
-<a class="btn btn-danger ml-2" asp-controller="Admin"
+<a class="btn btn-danger mt-1" asp-controller="Admin"
    asp-action="RemoveOrder"
    asp-route-orderId="@Model.Bestallning.BestallningId">Ta bort order</a>

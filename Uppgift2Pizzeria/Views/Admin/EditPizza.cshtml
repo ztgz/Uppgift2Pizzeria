@@ -22,7 +22,6 @@
                 <select asp-for="Meal.MatrattTyp" asp-items="@Model.FoodTypes" class="form-control"></select>
             </div>
 
-            <a class="btn btn-warning my-1" asp-controller="Admin" asp-action="CreateIngridient">Skapa ny ingrediens</a>
             <div class="form-group">
                 <label>Ingridienser</label>
                 <select asp-for="SelectedIngridients" asp-items="@Model.Products" multiple="multiple" class="form-control"></select>

@@ -58,7 +58,6 @@ namespace Uppgift2Pizzeria.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 //Save new meal to database
                 Matratt meal = vm.Meal;
 
@@ -87,9 +86,11 @@ namespace Uppgift2Pizzeria.Controllers
                 }
 
                 _context.SaveChanges();
+
+                return RedirectToAction("Menu", "Resturant");
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("CreatePizza");
         }
 
         public IActionResult RemoveMeal(int id)
@@ -231,7 +232,7 @@ namespace Uppgift2Pizzeria.Controllers
                 }
             }
 
-            return RedirectToAction("Menu", "Resturant");
+            return RedirectToAction("Index", "Admin");
         }
 
         public IActionResult Users()

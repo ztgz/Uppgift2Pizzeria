@@ -1,18 +1,20 @@
 ﻿@model UserRoleViewModel
 
 <table>
-    <tr>
+    <tr class="text-outline">
         <th>Namn</th>
+        <th>-</th>
         <th>Roll</th>
     </tr>
-    <tr>
+    <tr class="text-outline text-gray">
         <td>@Model.User.AnvandarNamn</td>
+        <td>-</td>
         <td>@Model.Role</td>
     </tr>
     
     <tr>
         <td colspan="2">
-            <a class="btn btn-success" asp-controller="Account" asp-action="ChangeUserRole" 
+            <a class="btn btn-success mt-1" asp-controller="Account" asp-action="ChangeUserRole" 
                asp-route-userName="@Model.User.AnvandarNamn">
                 Ändra roll
             </a>
